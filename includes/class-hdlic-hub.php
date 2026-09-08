@@ -107,6 +107,7 @@ final class HDLIC_Hub
         $plugins = array(
             array('name' => 'Abandoned Cart Recovery', 'file' => 'hdwebmobile-abandoned-cart-recovery/hdwebmobile-abandoned-cart-recovery.php', 'description' => 'Recover lost sales with automatic cart-recovery emails.'),
             array('name' => 'Back In Stock & Waitlist', 'file' => 'hdwebmobile-back-in-stock-waitlist/hdwebmobile-back-in-stock-waitlist.php', 'description' => 'Notify customers the moment an out-of-stock product is back.'),
+            array('name' => 'Booking & Appointments', 'file' => 'hdwebmobile-booking-appointments/hdwebmobile-booking-appointments.php', 'description' => 'Sell bookable services and appointments -- a booking\'s owner is set once, server-side, at purchase and never accepted from any later request.'),
             array('name' => 'Checkout Delivery Scheduler', 'file' => 'hdwebmobile-checkout-delivery-scheduler/hdwebmobile-checkout-delivery-scheduler.php', 'description' => 'Let customers pick a delivery date and time slot at checkout.'),
             array('name' => 'Formula Pricing', 'file' => 'hdwebmobile-formula-pricing/hdwebmobile-formula-pricing.php', 'description' => 'Price products from customer-entered numbers via a safe formula -- no eval().'),
             array('name' => 'Frequently Bought Together', 'file' => 'hdwebmobile-frequently-bought-together/hdwebmobile-frequently-bought-together.php', 'description' => 'An Amazon-style widget that adds several related products in one click.'),
@@ -128,6 +129,7 @@ final class HDLIC_Hub
             array('name' => 'Simple Subscriptions', 'file' => 'hdwebmobile-simple-subscriptions/hdwebmobile-simple-subscriptions.php', 'description' => 'Sell recurring products -- renewal state is always plain scalar columns, never a serialized blob.'),
             array('name' => 'Socials Floating', 'file' => 'hdwebmobile-socials-floating/hdwebmobile-socials-floating.php', 'description' => 'A floating social-media contact bar for your site.'),
             array('name' => 'Spin & Win', 'file' => 'hdwebmobile-spin-and-win/hdwebmobile-spin-and-win.php', 'description' => 'A gamified discount-wheel popup with server-enforced one spin per email.'),
+            array('name' => 'Vendor Marketplace', 'file' => 'hdwebmobile-vendor-marketplace/hdwebmobile-vendor-marketplace.php', 'description' => 'Turn your store into a multi-vendor marketplace -- vendors can only ever touch their own products, orders, and earnings, enforced by WordPress\'s own core capability system.'),
             array('name' => 'Wishlist', 'file' => 'hdwebmobile-wishlist/hdwebmobile-wishlist.php', 'description' => 'A wishlist that works with block-based Shop pages and guest browsing.'),
         );
         ?>
