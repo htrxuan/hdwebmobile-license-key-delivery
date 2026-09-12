@@ -80,26 +80,38 @@ final class HDLIC_Product
                     ?></strong>
                 </p>
 
-                <div style="padding:0 12px;margin-bottom:1em;">
+                <?php
+                /*
+                 * These two controls are NOT their own <form> -- this panel is rendered inside
+                 * WooCommerce's product-data box, which itself sits inside wp-admin's single
+                 * outer product-edit <form id="post">. A nested <form> is invalid HTML; browsers
+                 * silently drop the inner <form> tag and splice its fields into the outer form
+                 * instead, so a hidden `name="action"` field here would collide with the outer
+                 * form's own hidden action=editpost field and could hijack every product save on
+                 * the site (found and fixed during 2026-09-12 browser testing -- see
+                 * wp_org_publication_status memory for the full incident, including a follow-up
+                 * fix: a formaction/formmethod-only approach still lost this same fight, because
+                 * $_REQUEST merges POST over GET for a duplicate key, so the outer form's own
+                 * POSTed action=editpost silently overrode a query-string action override too).
+                 * The only fully collision-proof fix is a genuinely separate, non-nested <form>
+                 * -- built at click time from this container's own fields and submitted to a
+                 * fresh element appended to <body>, never touching the outer #post form at all.
+                 */
+                ?>
+                <div style="padding:0 12px;margin-bottom:1em;" data-hdlic-panel data-hdlic-action="hdlic_import_keys" data-hdlic-url="<?php echo esc_url(admin_url('admin-post.php')); ?>">
                     <p><strong><?php esc_html_e('Paste keys (one per line)', 'hdwebmobile-license-key-delivery'); ?></strong></p>
-                    <form method="post" action="<?php echo esc_url(admin_url('admin-post.php')); ?>">
-                        <input type="hidden" name="action" value="hdlic_import_keys" />
-                        <input type="hidden" name="product_id" value="<?php echo esc_attr($product_id); ?>" />
-                        <?php wp_nonce_field(self::NONCE_IMPORT . '_' . $product_id, 'hdlic_import_nonce'); ?>
-                        <textarea name="raw_keys" rows="6" style="width:100%;" placeholder="ABCDE-12345-FGHIJ"></textarea>
-                        <?php submit_button(__('Add Keys', 'hdwebmobile-license-key-delivery'), 'secondary', 'submit', false); ?>
-                    </form>
+                    <input type="hidden" name="hdlic_product_id" value="<?php echo esc_attr($product_id); ?>" />
+                    <?php wp_nonce_field(self::NONCE_IMPORT . '_' . $product_id, 'hdlic_import_nonce'); ?>
+                    <textarea name="raw_keys" rows="6" style="width:100%;" placeholder="ABCDE-12345-FGHIJ"></textarea>
+                    <p class="submit"><button type="button" class="button button-secondary" data-hdlic-submit><?php esc_html_e('Add Keys', 'hdwebmobile-license-key-delivery'); ?></button></p>
                 </div>
 
-                <div style="padding:0 12px;">
+                <div style="padding:0 12px;" data-hdlic-panel data-hdlic-action="hdlic_generate_keys" data-hdlic-url="<?php echo esc_url(admin_url('admin-post.php')); ?>">
                     <p><strong><?php esc_html_e('Or generate random keys', 'hdwebmobile-license-key-delivery'); ?></strong></p>
-                    <form method="post" action="<?php echo esc_url(admin_url('admin-post.php')); ?>">
-                        <input type="hidden" name="action" value="hdlic_generate_keys" />
-                        <input type="hidden" name="product_id" value="<?php echo esc_attr($product_id); ?>" />
-                        <?php wp_nonce_field(self::NONCE_GENERATE . '_' . $product_id, 'hdlic_generate_nonce'); ?>
-                        <input type="number" name="count" min="1" max="<?php echo (int) HDLIC_Repository::MAX_KEYS_PER_IMPORT; ?>" value="10" style="width:100px;" />
-                        <?php submit_button(__('Generate Keys', 'hdwebmobile-license-key-delivery'), 'secondary', 'submit', false); ?>
-                    </form>
+                    <input type="hidden" name="hdlic_product_id" value="<?php echo esc_attr($product_id); ?>" />
+                    <?php wp_nonce_field(self::NONCE_GENERATE . '_' . $product_id, 'hdlic_generate_nonce'); ?>
+                    <input type="number" name="count" min="1" max="<?php echo (int) HDLIC_Repository::MAX_KEYS_PER_IMPORT; ?>" value="10" style="width:100px;" />
+                    <p class="submit"><button type="button" class="button button-secondary" data-hdlic-submit><?php esc_html_e('Generate Keys', 'hdwebmobile-license-key-delivery'); ?></button></p>
                 </div>
             </div>
         </div>
@@ -112,6 +124,32 @@ final class HDLIC_Product
                     box.style.display = cb.checked ? '' : 'none';
                 });
             }
+
+            // See the PHP comment above: these two panels are never their own real <form> (the
+            // outer product-edit <form> would silently absorb a nested one), so a click here
+            // builds a genuinely separate <form>, attached directly to <body>, carrying only
+            // this panel's own fields plus the one real "action" this request needs.
+            document.querySelectorAll('[data-hdlic-panel] [data-hdlic-submit]').forEach(function (btn) {
+                btn.addEventListener('click', function () {
+                    var panel = btn.closest('[data-hdlic-panel]');
+                    var form = document.createElement('form');
+                    form.method = 'post';
+                    form.action = panel.getAttribute('data-hdlic-url') + '?action=' + encodeURIComponent(panel.getAttribute('data-hdlic-action'));
+                    form.style.display = 'none';
+                    panel.querySelectorAll('input, textarea, select').forEach(function (field) {
+                        if (!field.name) {
+                            return;
+                        }
+                        var clone = document.createElement('input');
+                        clone.type = 'hidden';
+                        clone.name = field.name;
+                        clone.value = field.value;
+                        form.appendChild(clone);
+                    });
+                    document.body.appendChild(form);
+                    form.submit();
+                });
+            });
         })();
         </script>
         <?php
@@ -137,7 +175,7 @@ final class HDLIC_Product
 
     public function handle_import_keys()
     {
-        $product_id = isset($_POST['product_id']) ? absint($_POST['product_id']) : 0;
+        $product_id = isset($_POST['hdlic_product_id']) ? absint($_POST['hdlic_product_id']) : 0;
 
         if (!current_user_can('edit_product', $product_id)) {
             wp_die(esc_html__('You do not have permission to do this.', 'hdwebmobile-license-key-delivery'));
@@ -159,7 +197,7 @@ final class HDLIC_Product
 
     public function handle_generate_keys()
     {
-        $product_id = isset($_POST['product_id']) ? absint($_POST['product_id']) : 0;
+        $product_id = isset($_POST['hdlic_product_id']) ? absint($_POST['hdlic_product_id']) : 0;
 
         if (!current_user_can('edit_product', $product_id)) {
             wp_die(esc_html__('You do not have permission to do this.', 'hdwebmobile-license-key-delivery'));
