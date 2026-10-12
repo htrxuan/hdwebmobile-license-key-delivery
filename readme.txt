@@ -16,10 +16,10 @@ Sell software license keys through WooCommerce -- keys are pasted or generated i
 
 HDWebmobile License Key Delivery turns any simple WooCommerce product into a license-key product. Add a pool of keys under the product's own "License Keys" tab -- paste them in or generate them randomly -- and one is automatically assigned to each customer the moment their order is completed.
 
-= Why this plugin exists =
-A competing WooCommerce license-key plugin had an Unrestricted File Upload vulnerability (CVE-2026-28114, CVSS 9.1): a Shop Manager-level account -- a role routinely handed to shop staff and third-party agencies, and deliberately less trusted than Administrator -- could bulk-import license keys through a file upload with insufficient extension/MIME/content validation, letting a disguised `.php` file achieve remote code execution. This plugin closes that vulnerability class by construction, not mitigation:
+= Security by design =
+A serious class of bug in license-key tools is a bulk key import that accepts a file upload with insufficient extension/MIME/content validation (CWE-434, Unrestricted File Upload). Even when limited to Shop Manager accounts -- a role routinely handed to shop staff and third-party agencies, and deliberately less trusted than Administrator -- a disguised `.php` file can achieve remote code execution. This plugin closes that vulnerability class by construction, not mitigation:
 
-* There is no file upload anywhere in this plugin. Bulk-adding keys is paste-a-textarea or generate-server-side only -- the vulnerable code path simply does not exist here.
+* There is no file upload anywhere in this plugin. Bulk-adding keys is paste-a-textarea or generate-server-side only -- that risky code path simply does not exist here.
 * Keys you paste in are stored exactly as given (with a database-level uniqueness constraint so the same key can never be issued twice); keys the plugin generates for you use PHP's own cryptographically secure `random_bytes()`, never anything predictable.
 * The key handed to each customer is claimed with a single atomic database update, so two orders completing at the same instant can never be issued the same key.
 * A customer's "License Keys" page under My Account is scoped to their own account at the database query itself -- one customer can never see another's keys.
