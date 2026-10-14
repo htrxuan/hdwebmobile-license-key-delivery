@@ -37,6 +37,9 @@ A serious class of bug in license-key tools is a bulk key import that accepts a 
 * Simple products only in this version -- no variable-product support
 * No per-key activation limits or remote deactivation; a key is either unassigned or assigned
 
+= Enjoying this plugin? =
+If it helps your site, please consider [leaving an honest review on WordPress.org](https://wordpress.org/support/plugin/hdwebmobile-license-key-delivery/reviews/#new-post) -- it helps other WordPress users find it. Found a problem or have an idea? Please [open a support topic](https://wordpress.org/support/plugin/hdwebmobile-license-key-delivery/) first so it can be fixed.
+
 == Installation ==
 
 1. Upload the plugin files to the `/wp-content/plugins/hdwebmobile-license-key-delivery` directory, or install the plugin through the WordPress plugins screen directly.
