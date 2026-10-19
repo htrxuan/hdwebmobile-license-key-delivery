@@ -36,6 +36,26 @@ final class HDLIC_Product
         add_action('woocommerce_process_product_meta', array($this, 'save_product_meta'));
         add_action('admin_post_hdlic_import_keys', array($this, 'handle_import_keys'));
         add_action('admin_post_hdlic_generate_keys', array($this, 'handle_generate_keys'));
+        add_action('admin_enqueue_scripts', array($this, 'enqueue_admin_assets'));
+    }
+
+    /**
+     * Only the product add/edit screen renders the "License Keys" tab.
+     */
+    public function enqueue_admin_assets()
+    {
+        $screen = get_current_screen();
+        if (!$screen || 'product' !== $screen->id) {
+            return;
+        }
+
+        wp_enqueue_script(
+            'hdlic-product-admin',
+            HDLIC_PLUGIN_URL . 'assets/js/hdlic-product-admin.js',
+            array(),
+            HDLIC_VERSION,
+            array('in_footer' => true)
+        );
     }
 
     public function add_product_data_tab($tabs)
@@ -115,43 +135,6 @@ final class HDLIC_Product
                 </div>
             </div>
         </div>
-        <script>
-        (function () {
-            var cb = document.getElementById('hdlic_enabled');
-            var box = document.getElementById('hdlic-key-management');
-            if (cb && box) {
-                cb.addEventListener('change', function () {
-                    box.style.display = cb.checked ? '' : 'none';
-                });
-            }
-
-            // See the PHP comment above: these two panels are never their own real <form> (the
-            // outer product-edit <form> would silently absorb a nested one), so a click here
-            // builds a genuinely separate <form>, attached directly to <body>, carrying only
-            // this panel's own fields plus the one real "action" this request needs.
-            document.querySelectorAll('[data-hdlic-panel] [data-hdlic-submit]').forEach(function (btn) {
-                btn.addEventListener('click', function () {
-                    var panel = btn.closest('[data-hdlic-panel]');
-                    var form = document.createElement('form');
-                    form.method = 'post';
-                    form.action = panel.getAttribute('data-hdlic-url') + '?action=' + encodeURIComponent(panel.getAttribute('data-hdlic-action'));
-                    form.style.display = 'none';
-                    panel.querySelectorAll('input, textarea, select').forEach(function (field) {
-                        if (!field.name) {
-                            return;
-                        }
-                        var clone = document.createElement('input');
-                        clone.type = 'hidden';
-                        clone.name = field.name;
-                        clone.value = field.value;
-                        form.appendChild(clone);
-                    });
-                    document.body.appendChild(form);
-                    form.submit();
-                });
-            });
-        })();
-        </script>
         <?php
     }
 
