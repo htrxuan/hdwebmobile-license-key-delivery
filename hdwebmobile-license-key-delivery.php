@@ -4,7 +4,7 @@
  * Plugin Name: HDWebmobile License Key Delivery
  * Plugin URI: https://hdwebmobile.com/plugins/hdwebmobile-license-key-delivery/
  * Description: Sell software license keys through WooCommerce -- keys are pasted or generated in wp-admin, never imported from an uploaded file, and one is atomically assigned to each order the moment it completes.
- * Version: 1.0.0
+ * Version: 1.0.1
  * Author: htrxuan - Han Tran
  * Author URI: https://hdwebmobile.com/
  * License: GPLv2 or later
@@ -23,7 +23,7 @@ if (!defined('ABSPATH')) {
 }
 
 // Define Constants
-define('HDLIC_VERSION', '1.0.0');
+define('HDLIC_VERSION', '1.0.1');
 define('HDLIC_DB_VERSION', '1.0.0');
 define('HDLIC_PLUGIN_FILE', __FILE__);
 define('HDLIC_PLUGIN_DIR', plugin_dir_path(__FILE__));
