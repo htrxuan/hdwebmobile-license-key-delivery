@@ -10,7 +10,7 @@ if (!defined('ABSPATH')) {
  * The "License Keys" product-data tab is the only place keys ever enter this plugin, and
  * both actions on it (paste, generate) are plain textarea/number POSTs handled by
  * admin_post -- there is no file input anywhere on this screen. See class-hdlic-repository.php
- * for the full picture of how this closes CVE-2026-28114.
+ * for why.
  */
 final class HDLIC_Product
 {

@@ -12,7 +12,7 @@ HDWebmobile License Key Delivery turns any simple WooCommerce product into a lic
 
 ## Why this plugin exists
 
-A competing WooCommerce license-key plugin had an Unrestricted File Upload vulnerability (CVE-2026-28114, CVSS 9.1): a Shop Manager-level account -- a role routinely handed to shop staff and third-party agencies, and deliberately less trusted than Administrator -- could bulk-import license keys through a file upload with insufficient extension/MIME/content validation, letting a disguised `.php` file achieve remote code execution. This plugin closes that vulnerability class by construction, not mitigation:
+A serious risk in license-key plugins is an unrestricted file upload (CWE-434): if a Shop Manager-level account -- a role routinely handed to shop staff and third-party agencies, and deliberately less trusted than Administrator -- can bulk-import license keys through a file upload with insufficient extension/MIME/content validation, a disguised `.php` file can achieve remote code execution. This plugin closes that vulnerability class by construction, not mitigation:
 
 * There is no file upload anywhere in this plugin. Bulk-adding keys is paste-a-textarea or generate-server-side only -- the vulnerable code path simply does not exist here.
 * Keys you paste in are stored exactly as given (with a database-level uniqueness constraint so the same key can never be issued twice); keys the plugin generates for you use PHP's own cryptographically secure `random_bytes()`, never anything predictable.

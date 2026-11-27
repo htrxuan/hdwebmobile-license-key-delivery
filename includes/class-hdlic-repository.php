@@ -7,12 +7,11 @@ if (!defined('ABSPATH')) {
 }
 
 /**
- * Closes CVE-2026-28114 (CVSS 9.1, Unrestricted Upload of File with Dangerous Type) in a
- * competing WooCommerce license-key plugin, where a Shop Manager-level account -- a role
- * routinely handed to shop staff and third-party agencies, deliberately less trusted than
- * Administrator -- could bulk-import license keys via a file upload with insufficient
- * extension/MIME/content validation, letting a `.php` file disguised as a key list achieve
- * remote code execution.
+ * Guards against unrestricted upload of a file with a dangerous type (CWE-434). The risk: a
+ * bulk key import via file upload with insufficient extension/MIME/content validation would let
+ * a Shop Manager-level account -- a role routinely handed to shop staff and third-party
+ * agencies, deliberately less trusted than Administrator -- upload a `.php` file disguised as
+ * a key list and achieve remote code execution.
  *
  * This plugin closes that vulnerability class by construction, not mitigation: bulk import
  * (import_keys() below) is paste-a-textarea/generate-server-side ONLY. There is no file
